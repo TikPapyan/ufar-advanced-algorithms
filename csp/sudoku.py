@@ -71,7 +71,7 @@ def save_grid_image(grid, filename):
     plt.savefig(filename, bbox_inches='tight')
     plt.close()
 
-def animate_sudoku_solution(sudoku):
+def animate_sudoku_solution(sudoku, num_frames=50):
     fig, ax = plt.subplots(figsize=(6, 6))
     ax.set_xticks(np.arange(0, 10, 1))
     ax.set_yticks(np.arange(0, 10, 1))
@@ -98,7 +98,11 @@ def animate_sudoku_solution(sudoku):
                 if value != 0:
                     ax.text(j + 0.5, 8.5 - i, str(value), ha='center', va='center', fontsize=16, color='blue')
 
-    ani = animation.FuncAnimation(fig, update, frames=len(sudoku.animation_steps), interval=500, repeat=False)
+    total_steps = len(sudoku.animation_steps)
+    frame_indices = np.linspace(0, total_steps - 1, num=num_frames, dtype=int)  # Pick 50 evenly spaced frames
+    ani = animation.FuncAnimation(fig, update, frames=frame_indices, interval=500, repeat=False)
+
+    ani.save('visualization/sudoku_solution.gif', writer='imagemagick', fps=5)  # Save as GIF
     plt.show()
 
 sudoku_puzzle = [
