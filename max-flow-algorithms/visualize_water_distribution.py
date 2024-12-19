@@ -1,9 +1,10 @@
+import os
 import plotly.graph_objects as go
 import networkx as nx
-import numpy as np
+
 from dinics_algorithm import DinicsAlgorithm
 
-def interactive_visualize_network(irrigation, title):
+def save_visualization(irrigation, title, filename):
     G = nx.DiGraph()
     
     for (u, v), capacity in irrigation.capacity.items():
@@ -16,31 +17,17 @@ def interactive_visualize_network(irrigation, title):
     edge_x = []
     edge_y = []
     edge_text = []
-    edge_colors = []
     
     for u, v, data in G.edges(data=True):
         x0, y0 = pos[u]
         x1, y1 = pos[v]
-        edge_x.append(x0)
-        edge_x.append(x1)
-        edge_y.append(y0)
-        edge_y.append(y1)
-        
+        edge_x.extend([x0, x1, None])
+        edge_y.extend([y0, y1, None])
         edge_text.append(f"Flow: {data['flow']}/{data['capacity']}")
-        
-        flow_used = data['flow']
-        capacity = data['capacity']
-        if flow_used == capacity:
-            edge_colors.append('red')
-        elif flow_used > 0:
-            edge_colors.append('orange')
-        else:
-            edge_colors.append('gray')
 
     node_x = []
     node_y = []
     node_text = []
-    
     for node, (x, y) in pos.items():
         node_x.append(x)
         node_y.append(y)
@@ -49,15 +36,18 @@ def interactive_visualize_network(irrigation, title):
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
-        x=edge_x, y=edge_y,
-        line=dict(width=2, color=edge_colors),
+        x=edge_x,
+        y=edge_y,
+        line=dict(width=2, color='gray'),
         hoverinfo='text',
         text=edge_text,
-        mode='lines'
+        mode='lines',
+        showlegend=False
     ))
 
     fig.add_trace(go.Scatter(
-        x=node_x, y=node_y,
+        x=node_x,
+        y=node_y,
         mode='markers+text',
         text=node_text,
         marker=dict(size=20, color='lightblue'),
@@ -73,7 +63,9 @@ def interactive_visualize_network(irrigation, title):
         hovermode='closest'
     )
 
-    fig.show()
+    if not os.path.exists('visualization'):
+        os.makedirs('visualization')
+    fig.write_image(f"visualization/{filename}.png")
 
 node_count = 6
 source = 0
@@ -89,7 +81,9 @@ irrigation.add_edge(3, 2, 9)
 irrigation.add_edge(3, 5, 20)
 irrigation.add_edge(4, 5, 7)
 
+save_visualization(irrigation, "Initial Irrigation Network", "irrigation_network_initial")
+
 max_flow = irrigation.max_flow(source, sink)
 print(f"Maximum water flow from source to sink: {max_flow}")
 
-interactive_visualize_network(irrigation, "Interactive Irrigation Network Flow")
+save_visualization(irrigation, "Final Irrigation Network", "irrigation_network_final")

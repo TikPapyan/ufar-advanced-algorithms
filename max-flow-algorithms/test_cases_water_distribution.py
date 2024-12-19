@@ -12,6 +12,7 @@ class TestMaxFlow(unittest.TestCase):
         irrigation.add_edge(1, 3, 10)
         
         max_flow = irrigation.max_flow(source, sink)
+        print(f"Test Simple Network - Max Flow: {max_flow}")
         self.assertEqual(max_flow, 10)
         
     def test_multiple_paths(self):
@@ -26,6 +27,7 @@ class TestMaxFlow(unittest.TestCase):
         irrigation.add_edge(3, 4, 10)
         
         max_flow = irrigation.max_flow(source, sink)
+        print(f"Test Multiple Paths - Max Flow: {max_flow}")
         self.assertEqual(max_flow, 15)
         
     def test_disconnected_network(self):
@@ -37,6 +39,7 @@ class TestMaxFlow(unittest.TestCase):
         irrigation.add_edge(1, 1, 5)
         
         max_flow = irrigation.max_flow(source, sink)
+        print(f"Test Disconnected Network - Max Flow: {max_flow}")
         self.assertEqual(max_flow, 0)
         
     def test_zero_capacity_edges(self):
@@ -48,4 +51,8 @@ class TestMaxFlow(unittest.TestCase):
         irrigation.add_edge(1, 2, 10)
         
         max_flow = irrigation.max_flow(source, sink)
+        print(f"Test Zero Capacity Edges - Max Flow: {max_flow}")
         self.assertEqual(max_flow, 0)
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
